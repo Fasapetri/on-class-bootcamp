@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: microservicio-tecnologia
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/bd_tecnologia
+    username: root
+    password: rootpassword
+  sql:
+    init:
+      mode: always
