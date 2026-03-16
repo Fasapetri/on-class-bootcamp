@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  postgres-server:
+    image: postgres:15-alpine
+    container_name: postgres-onclass
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: rootpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Esta línea mapea tu script para que se ejecute al iniciar
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql 
+
+  mongodb-server:
+    image: mongo:latest
+    container_name: mongo-onclass
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  postgres_data:
+  mongo_data:
