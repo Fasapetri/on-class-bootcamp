@@ -1,0 +1,13 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: microservicio-capacidad
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/bd_capacidad
+    username: root
+    password: rootpassword
+  sql:
+    init:
+      mode: always

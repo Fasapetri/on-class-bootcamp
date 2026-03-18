@@ -7,6 +7,8 @@ import com.onclass.tecnologia.domain.model.Tecnologia;
 import com.onclass.tecnologia.domain.spi.ITecnologiaPersistencePort;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 public class TecnologiaUseCase implements ITecnologiaServicePort {
 
     private final ITecnologiaPersistencePort tecnologiaPersistencePort;
@@ -27,6 +29,16 @@ public class TecnologiaUseCase implements ITecnologiaServicePort {
                     return tecnologiaPersistencePort.guardarTecnologia(tecnologia);
                 });
 
+    }
+
+    @Override
+    public Mono<Boolean> existenTodasLasTecnologias(List<Long> idsTecnologia) {
+        return tecnologiaPersistencePort.existenTodasLasTecnologias(idsTecnologia);
+    }
+
+    @Override
+    public Mono<Void> guardarRelacionCapacidadTecnologia(Long idCapacidad, List<Long> tecnologias) {
+        return tecnologiaPersistencePort.guardarRelacionCapacidadTecnologia(idCapacidad, tecnologias);
     }
 
     private Mono<Boolean> validarTecnologia(Tecnologia tecnologia) {
