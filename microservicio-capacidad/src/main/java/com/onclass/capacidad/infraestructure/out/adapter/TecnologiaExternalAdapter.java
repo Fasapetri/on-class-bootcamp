@@ -9,7 +9,6 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 public class TecnologiaExternalAdapter implements ITecnologiaExternalPort {
 
     private final WebClient webClient;

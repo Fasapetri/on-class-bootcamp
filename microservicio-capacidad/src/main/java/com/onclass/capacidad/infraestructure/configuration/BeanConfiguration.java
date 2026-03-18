@@ -6,6 +6,7 @@ import com.onclass.capacidad.domain.spi.ITecnologiaExternalPort;
 import com.onclass.capacidad.domain.usecase.CapacidadUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class BeanConfiguration {
@@ -15,5 +16,8 @@ public class BeanConfiguration {
         return new CapacidadUseCase(capacidadPersistencePort, tecnologiaExternalPort);
     }
 
-
+    @Bean
+    public WebClient.Builder webClientBuilder() {
+        return WebClient.builder();
+    }
 }

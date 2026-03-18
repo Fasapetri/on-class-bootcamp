@@ -25,6 +25,6 @@ public class TecnologiaRouter {
                         RequestPredicates.POST("/api/v1/tecnologias/relacionCapacidadTecnologia")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         tecnologiaController::guardarRelacionCapacidadTecnologia
-                )
+                );
     }
 }
