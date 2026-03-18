@@ -1,12 +1,16 @@
 package com.onclass.capacidad.infraestructure.out.adapter;
 
+import com.onclass.capacidad.domain.model.PaginadoCustom;
+import com.onclass.capacidad.domain.model.Tecnologia;
 import com.onclass.capacidad.domain.spi.ITecnologiaExternalPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class TecnologiaExternalAdapter implements ITecnologiaExternalPort {
@@ -37,6 +41,28 @@ public class TecnologiaExternalAdapter implements ITecnologiaExternalPort {
                 .bodyValue(tecnologias)
                 .retrieve()
                 .bodyToMono(Boolean.class);
+    }
+
+    @Override
+    public Mono<Map<Long, List<Tecnologia>>> obtenerTecnologiasPorCapacidad(List<Long> idsCapacidades) {
+        return webClient.post()
+                .uri("/obtenerTecnologiasPorCapacidad")
+                .bodyValue(idsCapacidades)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<Long, List<Tecnologia>>>() {});
+    }
+
+    @Override
+    public Mono<PaginadoCustom<Long>> obtenerIdsCapacidadesOrdenadosPorCantidad(int pagina, int tamanio, String direccionAscDesc) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/capacidadesOrdenadas")
+                        .queryParam("pagina", pagina)
+                        .queryParam("tamaño", tamanio)
+                        .queryParam("direccion", direccionAscDesc)
+                        .build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<PaginadoCustom<Long>>() {});
     }
 
     private record RelacionCapacidadTecnologiaRequest(Long idCapacidad, List<Long> tecnologias) {}

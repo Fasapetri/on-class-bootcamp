@@ -4,10 +4,13 @@ import com.onclass.tecnologia.application.dto.TecnologiaRequest;
 import com.onclass.tecnologia.application.dto.TecnologiaResponse;
 import com.onclass.tecnologia.application.mapper.TecnologiaMapper;
 import com.onclass.tecnologia.domain.api.ITecnologiaServicePort;
+import com.onclass.tecnologia.domain.model.PaginaCustom;
+import com.onclass.tecnologia.domain.model.Tecnologia;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TecnologiaHandler implements ITecnologiaHandler{
@@ -38,5 +41,15 @@ public class TecnologiaHandler implements ITecnologiaHandler{
     @Override
     public Mono<Void> guardarRelacionCapacidadTecnologia(Long idCapacidad, List<Long> tecnologias) {
         return tecnologiaServicePort.guardarRelacionCapacidadTecnologia(idCapacidad, tecnologias);
+    }
+
+    @Override
+    public Mono<Map<Long, List<Tecnologia>>> obtenerTecnologiasPorCapacidades(List<Long> idsCapacidad) {
+        return tecnologiaServicePort.obtenerTecnologiasPorCapacidades(idsCapacidad);
+    }
+
+    @Override
+    public Mono<PaginaCustom<Long>> obtenerCapacidadesOrdenadasPorCantidad(int pagina, int tamanio, String direccion) {
+        return tecnologiaServicePort.obtenerCapacidadesOrdenadasPorCantidad(pagina, tamanio, direccion);
     }
 }

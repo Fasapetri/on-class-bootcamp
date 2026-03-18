@@ -4,6 +4,8 @@ import com.onclass.capacidad.domain.api.ICapacidadServicePort;
 import com.onclass.capacidad.domain.exception.CapacidadErrorMessage;
 import com.onclass.capacidad.domain.exception.CapacidadException;
 import com.onclass.capacidad.domain.model.Capacidad;
+import com.onclass.capacidad.domain.model.CapacidadDetalle;
+import com.onclass.capacidad.domain.model.PaginadoCustom;
 import com.onclass.capacidad.domain.spi.ICapacidadPersistencePort;
 import com.onclass.capacidad.domain.spi.ITecnologiaExternalPort;
 import reactor.core.publisher.Mono;
@@ -39,6 +41,25 @@ public class CapacidadUseCase implements ICapacidadServicePort {
                 );
     }
 
+    @Override
+    public Mono<PaginadoCustom<CapacidadDetalle>> listarCapacidades(int pagina, int tamanio, String ordenarPor, String direccion) {
+
+        if(ordenarPor.equalsIgnoreCase("nombre")){
+            return capacidadPersistencePort.listarCapacidadesPaginadas(pagina, tamanio, direccion)
+                    .flatMap(paginadoCapacidades -> llenarConTecnologias(paginadoCapacidades));
+
+        } else
+            if(ordenarPor.equalsIgnoreCase("cantidadTecnologias")){
+                return tecnologiaExternalPort.obtenerIdsCapacidadesOrdenadosPorCantidad(pagina, tamanio, direccion)
+                        .flatMap(idsCapacidades -> paginadoDesdeIdsCapacidades(idsCapacidades));
+        } else {
+                return capacidadPersistencePort.listarCapacidadesPaginadas(pagina, tamanio, "asc")
+                        .flatMap(paginadoCapacidades -> llenarConTecnologias(paginadoCapacidades));
+            }
+
+
+    }
+
     private Mono<Boolean> validarTecnologia(List<Long> tecnologias){
         if(tecnologias == null || tecnologias.size() < 3){
             return Mono.error(new CapacidadException(CapacidadErrorMessage.TECNOLOGIAS_MINIMAS));
@@ -52,5 +73,52 @@ public class CapacidadUseCase implements ICapacidadServicePort {
             return Mono.error(new CapacidadException(CapacidadErrorMessage.TECNOLOGIAS_DUPLICADAS));
         }
         return Mono.just(true);
+    }
+
+    private Mono<PaginadoCustom<CapacidadDetalle>> llenarConTecnologias(PaginadoCustom<Capacidad> paginadoCapacidades){
+        List<Long> idsCapacidades = paginadoCapacidades.getContenido()
+                .stream()
+                .map(Capacidad::getId)
+                .toList();
+
+        if(idsCapacidades.isEmpty()){
+            return Mono.just(new PaginadoCustom<>(List.of(), paginadoCapacidades.getTotalPaginas(), paginadoCapacidades.getTotalElementos()));
+        }
+
+        return tecnologiaExternalPort.obtenerTecnologiasPorCapacidad(idsCapacidades)
+                .map(mapaTecnologias ->{
+                    List<CapacidadDetalle> detalle = paginadoCapacidades.getContenido()
+                            .stream()
+                            .map(capacidad -> new CapacidadDetalle(
+                                    capacidad.getId(),
+                                    capacidad.getNombre(),
+                                    capacidad.getDescripcion(),
+                                    mapaTecnologias.getOrDefault(capacidad.getId(), List.of())
+                                    )
+
+                            ).toList();
+                    return new PaginadoCustom<>(detalle, paginadoCapacidades.getTotalPaginas(), paginadoCapacidades.getTotalElementos());
+                });
+    }
+
+    private Mono<PaginadoCustom<CapacidadDetalle>> paginadoDesdeIdsCapacidades(PaginadoCustom<Long> paginadoIds) {
+        if(paginadoIds.getContenido().isEmpty()){
+            return Mono.just(new PaginadoCustom<>(List.of(), paginadoIds.getTotalPaginas(), paginadoIds.getTotalElementos()));
+        }
+
+        return capacidadPersistencePort.obtenerCapacidadesPorIds(paginadoIds.getContenido())
+                .collectList()
+                .flatMap(capacidades -> {
+                    List<Capacidad> capacidadesOrdenadas = paginadoIds.getContenido().stream()
+                            .flatMap(id -> capacidades.stream().filter(c -> c.getId().equals(id)))
+                            .toList();
+
+                    PaginadoCustom<Capacidad> paginaTransformada = new PaginadoCustom<>(
+                            capacidadesOrdenadas,
+                            paginadoIds.getTotalPaginas(),
+                            paginadoIds.getTotalElementos()
+                    );
+                    return llenarConTecnologias(paginaTransformada);
+                });
     }
 }
