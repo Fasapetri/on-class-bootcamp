@@ -7,6 +7,8 @@ import com.onclass.tecnologia.domain.api.ITecnologiaServicePort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Service
 public class TecnologiaHandler implements ITecnologiaHandler{
 
@@ -26,5 +28,15 @@ public class TecnologiaHandler implements ITecnologiaHandler{
                 .map(tecnologiaMapper::tecnologiaRequestToTecnologia)
                 .flatMap(tecnologiaServicePort::guardarTecnologia)
                 .map(tecnologiaMapper::tecnologiaToTecnologiaResponse);
+    }
+
+    @Override
+    public Mono<Boolean> existenTodasLasTecnologias(List<Long> idsTecnologia) {
+        return tecnologiaServicePort.existenTodasLasTecnologias(idsTecnologia);
+    }
+
+    @Override
+    public Mono<Void> guardarRelacionCapacidadTecnologia(Long idCapacidad, List<Long> tecnologias) {
+        return tecnologiaServicePort.guardarRelacionCapacidadTecnologia(idCapacidad, tecnologias);
     }
 }
