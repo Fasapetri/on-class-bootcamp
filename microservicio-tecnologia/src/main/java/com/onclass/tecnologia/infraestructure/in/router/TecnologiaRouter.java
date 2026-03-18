@@ -17,7 +17,7 @@ public class TecnologiaRouter {
                 tecnologiaController::guardarTecnologia
         )
                 .andRoute(
-                        RequestPredicates.GET("/api/v1/tecnologias/validarTecnologias")
+                        RequestPredicates.POST("/api/v1/tecnologias/validarTecnologias")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         tecnologiaController::existenTodasLasTecnologias
                 )

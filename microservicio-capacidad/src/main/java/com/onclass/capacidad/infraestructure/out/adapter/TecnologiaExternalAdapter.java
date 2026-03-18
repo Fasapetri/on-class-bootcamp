@@ -33,7 +33,7 @@ public class TecnologiaExternalAdapter implements ITecnologiaExternalPort {
     @Override
     public Mono<Boolean> existenTecnologias(List<Long> tecnologias) {
         return webClient.post()
-                .uri("/validarTecnologia")
+                .uri("/validarTecnologias")
                 .bodyValue(tecnologias)
                 .retrieve()
                 .bodyToMono(Boolean.class);
