@@ -4,6 +4,8 @@ import com.onclass.capacidad.application.dto.CapacidadRequest;
 import com.onclass.capacidad.application.dto.CapacidadResponse;
 import com.onclass.capacidad.application.mapper.CapacidadMapper;
 import com.onclass.capacidad.domain.api.ICapacidadServicePort;
+import com.onclass.capacidad.domain.model.CapacidadDetalle;
+import com.onclass.capacidad.domain.model.PaginadoCustom;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -25,4 +27,12 @@ public class CapacidadHandler implements ICapacidadHandler{
                 .flatMap(capacidadServicePort::guardarCapacidad)
                 .map(capacidadMapper::toCapacidadResponse);
     }
+
+    @Override
+    public Mono<PaginadoCustom<CapacidadDetalle>> listarCapacidades(int pagina, int tamanio, String ordenarPor, String direccion) {
+        return capacidadServicePort.listarCapacidades(pagina, tamanio, ordenarPor, direccion);
+
+    }
+
+
 }

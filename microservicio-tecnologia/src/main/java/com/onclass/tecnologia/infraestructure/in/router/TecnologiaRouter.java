@@ -25,6 +25,16 @@ public class TecnologiaRouter {
                         RequestPredicates.POST("/api/v1/tecnologias/relacionCapacidadTecnologia")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         tecnologiaController::guardarRelacionCapacidadTecnologia
+                )
+                .andRoute(
+                        RequestPredicates.POST("/api/v1/tecnologias/obtenerTecnologiasPorCapacidad")
+                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                        tecnologiaController::obtenerTecnologiasPorCapacidades
+                )
+                .andRoute(
+                        RequestPredicates.GET("/api/v1/tecnologias/capacidadesOrdenadas")
+                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                        tecnologiaController::obtenerIdsOrdenados
                 );
     }
 }

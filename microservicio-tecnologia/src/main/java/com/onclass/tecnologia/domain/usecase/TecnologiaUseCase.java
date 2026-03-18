@@ -3,11 +3,13 @@ package com.onclass.tecnologia.domain.usecase;
 import com.onclass.tecnologia.domain.api.ITecnologiaServicePort;
 import com.onclass.tecnologia.domain.exception.TecnologiaErrorMessage;
 import com.onclass.tecnologia.domain.exception.TecnologiaException;
+import com.onclass.tecnologia.domain.model.PaginaCustom;
 import com.onclass.tecnologia.domain.model.Tecnologia;
 import com.onclass.tecnologia.domain.spi.ITecnologiaPersistencePort;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 
 public class TecnologiaUseCase implements ITecnologiaServicePort {
 
@@ -39,6 +41,16 @@ public class TecnologiaUseCase implements ITecnologiaServicePort {
     @Override
     public Mono<Void> guardarRelacionCapacidadTecnologia(Long idCapacidad, List<Long> tecnologias) {
         return tecnologiaPersistencePort.guardarRelacionCapacidadTecnologia(idCapacidad, tecnologias);
+    }
+
+    @Override
+    public Mono<Map<Long, List<Tecnologia>>> obtenerTecnologiasPorCapacidades(List<Long> idsCapacidad) {
+        return tecnologiaPersistencePort.obtenerTecnologiasPorCapacidades(idsCapacidad);
+    }
+
+    @Override
+    public Mono<PaginaCustom<Long>> obtenerCapacidadesOrdenadasPorCantidad(int pagina, int tamanio, String direccion) {
+        return tecnologiaPersistencePort.obtenerCapacidadesOrdenadasPorCantidad(pagina, tamanio, direccion);
     }
 
     private Mono<Boolean> validarTecnologia(Tecnologia tecnologia) {

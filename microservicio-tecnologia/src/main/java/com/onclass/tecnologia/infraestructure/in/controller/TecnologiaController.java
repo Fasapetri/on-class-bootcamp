@@ -46,4 +46,19 @@ public class TecnologiaController {
                         .status(HttpStatus.CREATED)
                         .build());
     }
+
+    public Mono<ServerResponse> obtenerTecnologiasPorCapacidades(ServerRequest request){
+        return request.bodyToMono(new ParameterizedTypeReference<List<Long>>() {})
+                .flatMap(tecnologiaHandler::obtenerTecnologiasPorCapacidades)
+                .flatMap(mapa -> ServerResponse.ok().bodyValue(mapa));
+    }
+
+    public Mono<ServerResponse> obtenerIdsOrdenados(ServerRequest request){
+        int pagina = request.queryParam("pagina").map(Integer::parseInt).orElse(0);
+        int tamanio = request.queryParam("tamaño").map(Integer::parseInt).orElse(10);
+        String direccion = request.queryParam("direccion").orElse("desc");
+
+        return tecnologiaHandler.obtenerCapacidadesOrdenadasPorCantidad(pagina, tamanio, direccion)
+                .flatMap(paginaCustom -> ServerResponse.ok().bodyValue(paginaCustom));
+    }
 }
