@@ -26,11 +26,11 @@ public class BootcampUseCase implements IBootcampServicePort {
     public Mono<Bootcamp> guardarBootcamp(Bootcamp bootcamp) {
         return bootcampPersistencePort.existeBootcampPorNombre(bootcamp.getNombre())
                 .flatMap( esValido -> {
-                    if(!esValido){
+                    if(esValido){
                         return Mono.error(new BootcampException(BootcampErrorMessage.BOOTCAMP_DUPLICADO));
                     }
-                    return validarCapacidades(bootcamp.getCapacidadesIds())
-                            .flatMap(valido -> capacidadExternalPort.existenCapacidades(bootcamp.getCapacidadesIds()))
+                    return validarCapacidades(bootcamp.getCapacidades())
+                            .flatMap(valido -> capacidadExternalPort.existenCapacidades(bootcamp.getCapacidades()))
                             .flatMap(existenTodas -> {
                                 if(!existenTodas){
                                     return Mono.error(new BootcampException(BootcampErrorMessage.CAPACIDAD_NO_EXISTE));
@@ -38,7 +38,7 @@ public class BootcampUseCase implements IBootcampServicePort {
                                 return bootcampPersistencePort.guardarBootcamp(bootcamp);
                             });
                 }).flatMap(bootcampGuardado ->
-                        capacidadExternalPort.guardarRelacionBootcampCapacidad(bootcampGuardado.getId(), bootcampGuardado.getCapacidadesIds())
+                        capacidadExternalPort.guardarRelacionBootcampCapacidad(bootcampGuardado.getId(), bootcampGuardado.getCapacidades())
                                                 .thenReturn(bootcampGuardado)
         );
 
