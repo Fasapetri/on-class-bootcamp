@@ -3,6 +3,7 @@ package com.onclass.capacidad.domain.usecase;
 import com.onclass.capacidad.domain.api.ICapacidadServicePort;
 import com.onclass.capacidad.domain.exception.CapacidadErrorMessage;
 import com.onclass.capacidad.domain.exception.CapacidadException;
+import com.onclass.capacidad.domain.model.BootcampCapacidadProjection;
 import com.onclass.capacidad.domain.model.Capacidad;
 import com.onclass.capacidad.domain.model.CapacidadDetalle;
 import com.onclass.capacidad.domain.model.PaginadoCustom;
@@ -12,7 +13,9 @@ import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CapacidadUseCase implements ICapacidadServicePort {
 
@@ -46,15 +49,15 @@ public class CapacidadUseCase implements ICapacidadServicePort {
 
         if(ordenarPor.equalsIgnoreCase("nombre")){
             return capacidadPersistencePort.listarCapacidadesPaginadas(pagina, tamanio, direccion)
-                    .flatMap(paginadoCapacidades -> llenarConTecnologias(paginadoCapacidades));
+                    .flatMap(this::llenarConTecnologias);
 
         } else
             if(ordenarPor.equalsIgnoreCase("cantidadTecnologias")){
                 return tecnologiaExternalPort.obtenerIdsCapacidadesOrdenadosPorCantidad(pagina, tamanio, direccion)
-                        .flatMap(idsCapacidades -> paginadoDesdeIdsCapacidades(idsCapacidades));
+                        .flatMap(this::paginadoDesdeIdsCapacidades);
         } else {
                 return capacidadPersistencePort.listarCapacidadesPaginadas(pagina, tamanio, "asc")
-                        .flatMap(paginadoCapacidades -> llenarConTecnologias(paginadoCapacidades));
+                        .flatMap(this::llenarConTecnologias);
             }
 
 
@@ -68,6 +71,32 @@ public class CapacidadUseCase implements ICapacidadServicePort {
     @Override
     public Mono<Void> guardarRelacionBootcampCapacidad(Long idBootcamp, List<Long> capacidades) {
         return capacidadPersistencePort.guardarRelacionBootcampCapacidad(idBootcamp, capacidades);
+    }
+
+    @Override
+    public Mono<PaginadoCustom<Long>> obtenerIdsBootcampsOrdenadosPorCantidad(int pagina, int tamanio, String filtro) {
+        return capacidadPersistencePort.obtenerIdsBootcampsOrdenadosPorCantidad(pagina, tamanio, filtro);
+    }
+
+    @Override
+    public Mono<Map<Long, List<CapacidadDetalle>>> obtenerCapacidadesPorBootcamps(List<Long> idsBootcamp) {
+        if(idsBootcamp == null || idsBootcamp.isEmpty()) return Mono.just(Map.of());
+
+        return capacidadPersistencePort.obtenerProyeccionesPorBootcamps(idsBootcamp)
+                .collectList()
+                .flatMap(proyecciones -> {
+                    List<Long> idsCapacidades = proyecciones.stream()
+                            .map(BootcampCapacidadProjection::getIdCapacidad)
+                            .distinct()
+                            .toList();
+                    return tecnologiaExternalPort.obtenerTecnologiasPorCapacidad(idsCapacidades)
+                            .map(mapaTecnologias -> proyecciones.stream()
+                                    .collect(Collectors.groupingBy(BootcampCapacidadProjection::getIdBootcamp,
+                                            Collectors.mapping(
+                                                    p -> new CapacidadDetalle(p.getIdCapacidad(), p.getNombreCapacidad(), p.getDescripcionCapacidad(), mapaTecnologias.getOrDefault(p.getIdCapacidad(), List.of())),
+                                                    Collectors.toList()
+                                            ))));
+                });
     }
 
     private Mono<Boolean> validarTecnologia(List<Long> tecnologias){

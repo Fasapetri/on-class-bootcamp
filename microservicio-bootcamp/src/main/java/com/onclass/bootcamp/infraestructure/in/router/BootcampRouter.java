@@ -18,6 +18,11 @@ public class BootcampRouter {
                 RequestPredicates.POST("/api/v1/bootcamp")
                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                 bootcampController::guardarBootcamp
+                )
+                .andRoute(
+                        RequestPredicates.GET("/api/v1/bootcamp")
+                        .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                        bootcampController::listarBootcamps
                 );
     }
 }

@@ -1,9 +1,11 @@
 package com.onclass.capacidad.infraestructure.out.adapter;
 
+import com.onclass.capacidad.domain.model.BootcampCapacidadProjection;
 import com.onclass.capacidad.domain.model.Capacidad;
 import com.onclass.capacidad.domain.model.PaginadoCustom;
 import com.onclass.capacidad.domain.spi.ICapacidadPersistencePort;
 import com.onclass.capacidad.infraestructure.out.entity.BootcampCapacidadEntity;
+import com.onclass.capacidad.infraestructure.out.mapper.BootcampCapacidadProjectionEntityMapper;
 import com.onclass.capacidad.infraestructure.out.mapper.CapacidadEntityMapper;
 import com.onclass.capacidad.infraestructure.out.repository.CapacidadRepository;
 import com.onclass.capacidad.infraestructure.out.repository.IBootcampCapacidadRepository;
@@ -23,6 +25,7 @@ public class CapacidadAdapter implements ICapacidadPersistencePort {
     private final CapacidadRepository capacidadRepository;
     private final CapacidadEntityMapper capacidadEntityMapper;
     private final IBootcampCapacidadRepository bootcampCapacidadRepository;
+    private final BootcampCapacidadProjectionEntityMapper bootcampCapacidadProjectionEntityMapper;
 
     @Override
     public Mono<Capacidad> guardarCapacidad(Capacidad capacidad) {
@@ -74,5 +77,27 @@ public class CapacidadAdapter implements ICapacidadPersistencePort {
                 .map(capacidad -> new BootcampCapacidadEntity(idBootcamp, capacidad))
                 .flatMap(bootcampCapacidadRepository::save)
                 .then();
+    }
+
+    @Override
+    public Mono<PaginadoCustom<Long>> obtenerIdsBootcampsOrdenadosPorCantidad(int pagina, int tamanio, String filtro) {
+        int offset = pagina * tamanio;
+        Flux<Long> idsFlux = filtro.equalsIgnoreCase("asc") ?
+                bootcampCapacidadRepository.findBootcampIdsOrderedByCountAsc(tamanio, offset) :
+                bootcampCapacidadRepository.findBootcampIdsOrderedByCountDesc(tamanio, offset);
+
+        return Mono.zip(idsFlux.collectList(), bootcampCapacidadRepository.countDistinctBootcamps())
+                .map(tupla -> {
+                    List<Long> ids = tupla.getT1();
+                    Long totalElementos = tupla.getT2();
+                    int totalPagina = (int) Math.ceil((double) totalElementos / tamanio);
+                    return new PaginadoCustom<>(ids, totalPagina, totalElementos);
+                });
+    }
+
+    @Override
+    public Flux<BootcampCapacidadProjection> obtenerProyeccionesPorBootcamps(List<Long> idsBootcamp) {
+        return bootcampCapacidadRepository.findCapacidadesByBootcampId(idsBootcamp)
+                .map(bootcampCapacidadProjectionEntityMapper::toBootcampCapacidadProjection);
     }
 }

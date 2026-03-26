@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CapacidadHandler implements ICapacidadHandler{
@@ -44,6 +45,16 @@ public class CapacidadHandler implements ICapacidadHandler{
     @Override
     public Mono<Void> guardarRelacionBootcampCapacidad(Long idBootcamp, List<Long> capacidades) {
         return capacidadServicePort.guardarRelacionBootcampCapacidad(idBootcamp, capacidades);
+    }
+
+    @Override
+    public Mono<PaginadoCustom<Long>> obtenerIdsBootcampsOrdenados(int pagina, int tamanio, String filtro) {
+        return capacidadServicePort.obtenerIdsBootcampsOrdenadosPorCantidad(pagina, tamanio, filtro);
+    }
+
+    @Override
+    public Mono<Map<Long, List<CapacidadDetalle>>> obtenerCapacidadesPorBootcamps(List<Long> idsBootcamp) {
+        return capacidadServicePort.obtenerCapacidadesPorBootcamps(idsBootcamp);
     }
 
 
