@@ -3,7 +3,6 @@ package com.onclass.capacidad.infraestructure.out.adapter;
 import com.onclass.capacidad.domain.model.PaginadoCustom;
 import com.onclass.capacidad.domain.model.Tecnologia;
 import com.onclass.capacidad.domain.spi.ITecnologiaExternalPort;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -63,6 +62,15 @@ public class TecnologiaExternalAdapter implements ITecnologiaExternalPort {
                         .build())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<PaginadoCustom<Long>>() {});
+    }
+
+    @Override
+    public Mono<Void> eliminarRelacionesYTecnologiasHuerfanas(List<Long> idsCapacidades) {
+        return webClient.post()
+                .uri("/eliminarRelacionesYTecnologiasHuerfanas")
+                .bodyValue(idsCapacidades)
+                .retrieve()
+                .bodyToMono(Void.class);
     }
 
     private record RelacionCapacidadTecnologiaRequest(Long idCapacidad, List<Long> tecnologias) {}

@@ -9,4 +9,5 @@ public interface IBootcampServicePort {
 
     Mono<Bootcamp> guardarBootcamp(Bootcamp bootcamp);
     Mono<PaginaCustom<BootcampDetalle>> buscarBootcamps(int numeroPagina, int tamanioPagina, String orden, String filtro);
+    Mono<Void> eliminarBootcamp(Long idBootcamp);
 }

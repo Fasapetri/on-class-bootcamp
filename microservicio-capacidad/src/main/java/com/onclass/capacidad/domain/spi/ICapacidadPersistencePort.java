@@ -17,4 +17,7 @@ public interface ICapacidadPersistencePort {
     Mono<Void> guardarRelacionBootcampCapacidad(Long idBootcamp, List<Long> capacidades);
     Mono<PaginadoCustom<Long>> obtenerIdsBootcampsOrdenadosPorCantidad(int pagina, int tamanio, String filtro);
     Flux<BootcampCapacidadProjection> obtenerProyeccionesPorBootcamps(List<Long> idsBootcamp);
+    Flux<Long> findCapacidadesHuerfanas(List<Long> idsCapacidades);
+    Mono<Void> eliminarRelacionesYCapacidadesHuerfanas(Long idBootcamp, List<Long> idsCapacidades);
+    Flux<Long> findCapacidadesPorBootcamp(Long idBootcamp);
 }

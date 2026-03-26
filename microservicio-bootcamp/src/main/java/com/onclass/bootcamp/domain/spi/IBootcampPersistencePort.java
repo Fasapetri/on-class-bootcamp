@@ -14,4 +14,5 @@ public interface IBootcampPersistencePort {
     Mono<Boolean> existeBootcampPorNombre(String nombreBootcamp);
     Mono<PaginaCustom<Bootcamp>> listarBootcampsPaginados(int numeroPagina, int tamanioPagina, String orden);
     Flux<Bootcamp> obtenerBootcampsPorIds(List<Long> ids);
+    Mono<Void> eliminarBootcamp(Long idBootcamp);
 }

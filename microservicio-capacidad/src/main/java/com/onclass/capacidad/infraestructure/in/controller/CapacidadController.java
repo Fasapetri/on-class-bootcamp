@@ -77,4 +77,10 @@ public class CapacidadController {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(capacidadResponse));
     }
+
+    public Mono<ServerResponse> eliminarRelacionesYCapacidadesHuerfanas(ServerRequest serverRequest){
+        Long idBootcamp = Long.valueOf(serverRequest.pathVariable("id"));
+        return capacidadHandler.eliminarRelacionesYCapacidadesHuerfanas(idBootcamp)
+                .then(ServerResponse.noContent().build());
+    }
 }

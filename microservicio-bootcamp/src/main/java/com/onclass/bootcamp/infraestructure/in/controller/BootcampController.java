@@ -38,4 +38,10 @@ public class BootcampController {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(paginaCustom));
     }
+
+    public Mono<ServerResponse> eliminarBootcamp(ServerRequest serverRequest) {
+        Long idBootcamp = Long.valueOf(serverRequest.pathVariable("id"));
+        return bootcampHandler.eliminarBootcamp(idBootcamp)
+                .then(ServerResponse.noContent().build());
+    }
 }

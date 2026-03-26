@@ -13,4 +13,5 @@ public interface ITecnologiaExternalPort {
     Mono<Boolean> existenTecnologias(List<Long> tecnologias);
     Mono<Map<Long, List<Tecnologia>>> obtenerTecnologiasPorCapacidad(List<Long> idsCapacidades);
     Mono<PaginadoCustom<Long>> obtenerIdsCapacidadesOrdenadosPorCantidad(int pagina, int tamanio, String direccionAscDesc);
+    Mono<Void> eliminarRelacionesYTecnologiasHuerfanas(List<Long> idsCapacidades);
 }

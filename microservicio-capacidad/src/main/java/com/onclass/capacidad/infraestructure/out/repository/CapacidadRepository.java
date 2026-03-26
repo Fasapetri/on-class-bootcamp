@@ -13,4 +13,5 @@ public interface CapacidadRepository extends ReactiveCrudRepository<CapacidadEnt
 
     Flux<CapacidadEntity> findAllBy(Pageable pageable);
     Mono<Long> countByIdIn(List<Long> ids);
+    Mono<Void> deleteByIdIn(List<Long> ids);
 }

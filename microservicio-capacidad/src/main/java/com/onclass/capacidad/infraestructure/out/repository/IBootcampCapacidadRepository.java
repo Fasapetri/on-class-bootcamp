@@ -25,4 +25,11 @@ public interface IBootcampCapacidadRepository extends ReactiveCrudRepository<Boo
 
     @Query("SELECT COUNT(DISTINCT id_bootcamp) FROM bootcamp_capacidad")
     Mono<Long> countDistinctBootcamps();
+
+    @Query("SELECT id_capacidad FROM bootcamp_capacidad WHERE id_capacidad IN (:idsCapacidades) GROUP BY id_capacidad HAVING COUNT(id_bootcamp) = 1")
+    Flux<Long> findCapacidadesHuerfanas(List<Long> idsCapacidades);
+
+    Flux<BootcampCapacidadEntity> findByIdBootcamp(Long idBootcamp);
+
+    Mono<Void> deleteByIdBootcamp(Long idBootcamp);
 }

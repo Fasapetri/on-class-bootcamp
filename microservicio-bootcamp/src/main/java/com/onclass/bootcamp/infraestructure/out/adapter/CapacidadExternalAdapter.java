@@ -63,5 +63,13 @@ public class CapacidadExternalAdapter implements ICapacidadExternalPort {
                 .bodyToMono(new ParameterizedTypeReference<Map<Long, List<Capacidad>>>() {});
     }
 
+    @Override
+    public Mono<Void> eliminarRelacionesYCapacidadesHuerfanas(Long idBootcamp) {
+        return webClient.delete()
+                .uri("/eliminarRelacionesYCapacidadesHuerfanas/{id}", idBootcamp)
+                .retrieve()
+                .bodyToMono(Void.class);
+    }
+
     private record RelacionBootcampCapacidadRequest(Long idBootcamp, List<Long> capacidades) {}
 }

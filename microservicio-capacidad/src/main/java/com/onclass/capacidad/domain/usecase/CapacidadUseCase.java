@@ -99,6 +99,22 @@ public class CapacidadUseCase implements ICapacidadServicePort {
                 });
     }
 
+    @Override
+    public Mono<Void> eliminarRelacionesYCapacidadesHuerfanas(Long idBootcamp) {
+        return capacidadPersistencePort.findCapacidadesPorBootcamp(idBootcamp)
+                .collectList()
+                .flatMap(idsCapacidades -> {
+                    if(idsCapacidades.isEmpty()) return Mono.empty();
+
+                    return capacidadPersistencePort.findCapacidadesHuerfanas(idsCapacidades)
+                            .collectList()
+                            .flatMap(capacidadesHuerfanas ->
+                                    tecnologiaExternalPort.eliminarRelacionesYTecnologiasHuerfanas(capacidadesHuerfanas)
+                                            .then(capacidadPersistencePort.eliminarRelacionesYCapacidadesHuerfanas(idBootcamp, capacidadesHuerfanas))
+                                    );
+                });
+    }
+
     private Mono<Boolean> validarTecnologia(List<Long> tecnologias){
         if(tecnologias == null || tecnologias.size() < 3){
             return Mono.error(new CapacidadException(CapacidadErrorMessage.TECNOLOGIAS_MINIMAS));

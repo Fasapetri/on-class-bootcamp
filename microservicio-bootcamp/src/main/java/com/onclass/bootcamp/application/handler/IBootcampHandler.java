@@ -10,4 +10,5 @@ public interface IBootcampHandler {
 
     Mono<BootcampResponse> guardarBootcamp(BootcampRequest bootcampRequest);
     Mono<PaginaCustom<BootcampDetalle>> listarBootcamps(int pagina, int tamanio, String orden, String filtro);
+    Mono<Void> eliminarBootcamp(Long idBootcamp);
 }

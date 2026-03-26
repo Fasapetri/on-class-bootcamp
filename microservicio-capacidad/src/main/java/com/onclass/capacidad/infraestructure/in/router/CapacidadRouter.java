@@ -43,6 +43,11 @@ public class CapacidadRouter {
                         RequestPredicates.POST("/api/v1/capacidad/obtenerCapacidadesPorBootcamp")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         capacidadController::obtenerCapacidadesPorBootcamps
+                )
+                .andRoute(
+                        RequestPredicates.DELETE("/api/v1/capacidad/eliminarRelacionesYCapacidadesHuerfanas/{id}")
+                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                        capacidadController::eliminarRelacionesYCapacidadesHuerfanas
                 );
     }
 }
