@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -99,5 +100,24 @@ public class CapacidadAdapter implements ICapacidadPersistencePort {
     public Flux<BootcampCapacidadProjection> obtenerProyeccionesPorBootcamps(List<Long> idsBootcamp) {
         return bootcampCapacidadRepository.findCapacidadesByBootcampId(idsBootcamp)
                 .map(bootcampCapacidadProjectionEntityMapper::toBootcampCapacidadProjection);
+    }
+
+    @Override
+    public Flux<Long> findCapacidadesHuerfanas(List<Long> idsCapacidades) {
+        if (idsCapacidades.isEmpty()) return Flux.empty();
+        return bootcampCapacidadRepository.findCapacidadesHuerfanas(idsCapacidades);
+    }
+
+    @Override
+    @Transactional
+    public Mono<Void> eliminarRelacionesYCapacidadesHuerfanas(Long idBootcamp, List<Long> idsCapacidades) {
+        return bootcampCapacidadRepository.deleteByIdBootcamp(idBootcamp)
+                .then(idsCapacidades.isEmpty() ? Mono.empty() : capacidadRepository.deleteByIdIn(idsCapacidades));
+    }
+
+    @Override
+    public Flux<Long> findCapacidadesPorBootcamp(Long idBootcamp) {
+        return bootcampCapacidadRepository.findByIdBootcamp(idBootcamp)
+                .map(BootcampCapacidadEntity::getIdCapacidad);
     }
 }

@@ -13,4 +13,5 @@ public interface ICapacidadExternalPort {
     Mono<Boolean> existenCapacidades(List<Long> capacidades);
     Mono<PaginaCustom<Long>> obtenerIdsBootcampsOrdenadosPorCantidad(int numeroPagina, int tamanioPagina, String orden);
     Mono<Map<Long, List<Capacidad>>> obtenerCapacidadesPorBootcamp(List<Long> bootcampsIds);
+    Mono<Void> eliminarRelacionesYCapacidadesHuerfanas(Long idBootcamp);
 }

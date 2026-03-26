@@ -61,6 +61,12 @@ public class BootcampUseCase implements IBootcampServicePort {
         }
     }
 
+    @Override
+    public Mono<Void> eliminarBootcamp(Long idBootcamp) {
+        return capacidadExternalPort.eliminarRelacionesYCapacidadesHuerfanas(idBootcamp)
+                .then(bootcampPersistencePort.eliminarBootcamp(idBootcamp));
+    }
+
     private Mono<Boolean> validarCapacidades(List<Long> capacidades){
 
         if(capacidades == null || capacidades.isEmpty()){

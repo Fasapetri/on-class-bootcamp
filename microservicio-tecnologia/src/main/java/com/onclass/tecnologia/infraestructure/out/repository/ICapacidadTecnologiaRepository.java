@@ -41,4 +41,6 @@ public interface ICapacidadTecnologiaRepository extends ReactiveCrudRepository<C
             "SELECT COUNT(DISTINCT id_capacidad) FROM capacidad_tecnologia"
     )
     Mono<Long> countDistinctCapacidades();
+
+    Mono<Void> deleteByIdCapacidadIn(List<Long> idsCapacidades);
 }

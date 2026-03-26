@@ -57,5 +57,10 @@ public class CapacidadHandler implements ICapacidadHandler{
         return capacidadServicePort.obtenerCapacidadesPorBootcamps(idsBootcamp);
     }
 
+    @Override
+    public Mono<Void> eliminarRelacionesYCapacidadesHuerfanas(Long idBootcamp) {
+        return capacidadServicePort.eliminarRelacionesYCapacidadesHuerfanas(idBootcamp);
+    }
+
 
 }

@@ -52,4 +52,9 @@ public class TecnologiaHandler implements ITecnologiaHandler{
     public Mono<PaginaCustom<Long>> obtenerCapacidadesOrdenadasPorCantidad(int pagina, int tamanio, String direccion) {
         return tecnologiaServicePort.obtenerCapacidadesOrdenadasPorCantidad(pagina, tamanio, direccion);
     }
+
+    @Override
+    public Mono<Void> eliminarRelacionesYTecnologiasHuerfanas(List<Long> idsCapacidades) {
+        return tecnologiaServicePort.eliminarRelacionesYTecnologiasHuerfanas(idsCapacidades);
+    }
 }

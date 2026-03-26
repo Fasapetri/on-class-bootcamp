@@ -33,4 +33,9 @@ public class BootcampHandler implements IBootcampHandler{
         return bootcampServicePort.buscarBootcamps(pagina, tamanio, orden, filtro);
     }
 
+    @Override
+    public Mono<Void> eliminarBootcamp(Long idBootcamp) {
+        return bootcampServicePort.eliminarBootcamp(idBootcamp);
+    }
+
 }

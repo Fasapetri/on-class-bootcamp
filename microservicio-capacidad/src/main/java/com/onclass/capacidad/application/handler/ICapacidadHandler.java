@@ -17,4 +17,5 @@ public interface ICapacidadHandler {
     Mono<Void> guardarRelacionBootcampCapacidad(Long idBootcamp, List<Long> capacidades);
     Mono<PaginadoCustom<Long>> obtenerIdsBootcampsOrdenados(int pagina, int tamanio, String filtro);
     Mono<Map<Long, List<CapacidadDetalle>>> obtenerCapacidadesPorBootcamps(List<Long> idsBootcamp);
+    Mono<Void> eliminarRelacionesYCapacidadesHuerfanas(Long idBootcamp);
 }

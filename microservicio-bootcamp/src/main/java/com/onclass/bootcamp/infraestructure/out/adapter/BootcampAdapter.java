@@ -64,4 +64,9 @@ public class BootcampAdapter implements IBootcampPersistencePort {
         return bootcampRepository.findAllById(ids)
                 .map(bootcampEntityMapper::bootcampEntityToBootcamp);
     }
+
+    @Override
+    public Mono<Void> eliminarBootcamp(Long idBootcamp) {
+        return bootcampRepository.deleteById(idBootcamp);
+    }
 }

@@ -53,6 +53,11 @@ public class TecnologiaUseCase implements ITecnologiaServicePort {
         return tecnologiaPersistencePort.obtenerCapacidadesOrdenadasPorCantidad(pagina, tamanio, direccion);
     }
 
+    @Override
+    public Mono<Void> eliminarRelacionesYTecnologiasHuerfanas(List<Long> idsCapacidades) {
+        return tecnologiaPersistencePort.eliminarRelacionesYTecnologiasHuerfanas(idsCapacidades);
+    }
+
     private Mono<Boolean> validarTecnologia(Tecnologia tecnologia) {
         if (tecnologia.getNombre() == null || tecnologia.getNombre().isBlank()) {
             return Mono.error(new TecnologiaException(TecnologiaErrorMessage.NOMBRE_REQUERIDO));

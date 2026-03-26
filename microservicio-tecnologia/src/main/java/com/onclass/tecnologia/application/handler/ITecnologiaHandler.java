@@ -16,4 +16,5 @@ public interface ITecnologiaHandler {
     Mono<Void> guardarRelacionCapacidadTecnologia(Long idCapacidad, List<Long> tecnologias);
     Mono<Map<Long, List<Tecnologia>>> obtenerTecnologiasPorCapacidades(List<Long> idsCapacidad);
     Mono<PaginaCustom<Long>> obtenerCapacidadesOrdenadasPorCantidad(int pagina, int tamanio, String direccion);
+    Mono<Void> eliminarRelacionesYTecnologiasHuerfanas(List<Long> idsCapacidades);
 }

@@ -10,12 +10,12 @@ import com.onclass.tecnologia.infraestructure.out.repository.ICapacidadTecnologi
 import com.onclass.tecnologia.infraestructure.out.repository.ITecnologiaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Component
@@ -88,5 +88,15 @@ public class TecnologiaAdapter implements ITecnologiaPersistencePort {
                     int totalPaginas = (int) Math.ceil((double) totalElementos / tamanio);
                     return new PaginaCustom<>(ids, totalPaginas, totalElementos);
                 });
+    }
+
+    @Override
+    @Transactional
+    public Mono<Void> eliminarRelacionesYTecnologiasHuerfanas(List<Long> idsCapacidades) {
+        if(idsCapacidades == null || idsCapacidades.isEmpty()) return Mono.empty();
+
+        return capacidadTecnologiaRepository.deleteByIdCapacidadIn(idsCapacidades)
+                .then(tecnologiaRepository.eliminarTecnologiasHuerfanas())
+                .then();
     }
 }

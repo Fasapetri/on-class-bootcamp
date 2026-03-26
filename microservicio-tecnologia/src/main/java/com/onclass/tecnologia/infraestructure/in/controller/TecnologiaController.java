@@ -61,4 +61,10 @@ public class TecnologiaController {
         return tecnologiaHandler.obtenerCapacidadesOrdenadasPorCantidad(pagina, tamanio, direccion)
                 .flatMap(paginaCustom -> ServerResponse.ok().bodyValue(paginaCustom));
     }
+
+    public Mono<ServerResponse> eliminarRelacionesYTecnologiasHuerfanas(ServerRequest serverRequest){
+        return serverRequest.bodyToMono(new ParameterizedTypeReference<List<Long>>() {})
+                .flatMap(tecnologiaHandler::eliminarRelacionesYTecnologiasHuerfanas)
+                .then(ServerResponse.noContent().build());
+    }
 }
