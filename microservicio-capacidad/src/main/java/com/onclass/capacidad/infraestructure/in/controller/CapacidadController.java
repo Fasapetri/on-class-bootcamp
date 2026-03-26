@@ -57,4 +57,24 @@ public class CapacidadController {
                         ServerResponse.status(HttpStatus.CREATED)
                                 .build());
     }
+
+    public Mono<ServerResponse> obtenerIdsBootcampsOrdenados(ServerRequest serverRequest){
+        int pagina = serverRequest.queryParam("page").map(Integer::parseInt).orElse(0);
+        int tamanio = serverRequest.queryParam("size").map(Integer::parseInt).orElse(10);
+        String filtro = serverRequest.queryParam("filtro").orElse("desc");
+
+        return capacidadHandler.obtenerIdsBootcampsOrdenados(pagina, tamanio, filtro)
+                .flatMap(paginaIds-> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(paginaIds));
+    }
+
+    public Mono<ServerResponse> obtenerCapacidadesPorBootcamps(ServerRequest serverRequest){
+        return serverRequest.bodyToMono(new ParameterizedTypeReference<List<Long>>() {})
+                .flatMap(capacidadHandler::obtenerCapacidadesPorBootcamps)
+                .flatMap(capacidadResponse ->
+                        ServerResponse.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(capacidadResponse));
+    }
 }

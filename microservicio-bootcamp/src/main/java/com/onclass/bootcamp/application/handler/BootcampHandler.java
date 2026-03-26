@@ -4,6 +4,8 @@ import com.onclass.bootcamp.application.dto.BootcampRequest;
 import com.onclass.bootcamp.application.dto.BootcampResponse;
 import com.onclass.bootcamp.application.mapper.IBootcampMapper;
 import com.onclass.bootcamp.domain.api.IBootcampServicePort;
+import com.onclass.bootcamp.domain.model.BootcampDetalle;
+import com.onclass.bootcamp.domain.model.PaginaCustom;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -24,6 +26,11 @@ public class BootcampHandler implements IBootcampHandler{
                 .map(bootcampMapper::bootcampRequestToBootcamp)
                 .flatMap(bootcampServicePort::guardarBootcamp)
                 .map(bootcampMapper::bootcampToBootcampResponse);
+    }
+
+    @Override
+    public Mono<PaginaCustom<BootcampDetalle>> listarBootcamps(int pagina, int tamanio, String orden, String filtro) {
+        return bootcampServicePort.buscarBootcamps(pagina, tamanio, orden, filtro);
     }
 
 }

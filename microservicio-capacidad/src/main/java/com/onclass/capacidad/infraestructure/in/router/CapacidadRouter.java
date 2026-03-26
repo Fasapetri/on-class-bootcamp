@@ -33,6 +33,16 @@ public class CapacidadRouter {
                         RequestPredicates.POST("/api/v1/capacidad/validarCapacidades")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         capacidadController::validarCapacidades
+                )
+                .andRoute(
+                        RequestPredicates.GET("/api/v1/capacidad/bootcampsOrdenados")
+                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                        capacidadController::obtenerIdsBootcampsOrdenados
+                )
+                .andRoute(
+                        RequestPredicates.POST("/api/v1/capacidad/obtenerCapacidadesPorBootcamp")
+                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                        capacidadController::obtenerCapacidadesPorBootcamps
                 );
     }
 }
