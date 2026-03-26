@@ -60,6 +60,16 @@ public class CapacidadUseCase implements ICapacidadServicePort {
 
     }
 
+    @Override
+    public Mono<Boolean> existenTodasLasCapacidades(List<Long> ids) {
+        return capacidadPersistencePort.existenTodasLasCapacidades(ids);
+    }
+
+    @Override
+    public Mono<Void> guardarRelacionBootcampCapacidad(Long idBootcamp, List<Long> capacidades) {
+        return capacidadPersistencePort.guardarRelacionBootcampCapacidad(idBootcamp, capacidades);
+    }
+
     private Mono<Boolean> validarTecnologia(List<Long> tecnologias){
         if(tecnologias == null || tecnologias.size() < 3){
             return Mono.error(new CapacidadException(CapacidadErrorMessage.TECNOLOGIAS_MINIMAS));

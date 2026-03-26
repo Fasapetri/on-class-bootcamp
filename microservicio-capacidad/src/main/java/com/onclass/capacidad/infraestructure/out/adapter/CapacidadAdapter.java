@@ -3,8 +3,10 @@ package com.onclass.capacidad.infraestructure.out.adapter;
 import com.onclass.capacidad.domain.model.Capacidad;
 import com.onclass.capacidad.domain.model.PaginadoCustom;
 import com.onclass.capacidad.domain.spi.ICapacidadPersistencePort;
+import com.onclass.capacidad.infraestructure.out.entity.BootcampCapacidadEntity;
 import com.onclass.capacidad.infraestructure.out.mapper.CapacidadEntityMapper;
 import com.onclass.capacidad.infraestructure.out.repository.CapacidadRepository;
+import com.onclass.capacidad.infraestructure.out.repository.IBootcampCapacidadRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -20,6 +22,7 @@ public class CapacidadAdapter implements ICapacidadPersistencePort {
 
     private final CapacidadRepository capacidadRepository;
     private final CapacidadEntityMapper capacidadEntityMapper;
+    private final IBootcampCapacidadRepository bootcampCapacidadRepository;
 
     @Override
     public Mono<Capacidad> guardarCapacidad(Capacidad capacidad) {
@@ -57,5 +60,19 @@ public class CapacidadAdapter implements ICapacidadPersistencePort {
     public Flux<Capacidad> obtenerCapacidadesPorIds(List<Long> ids) {
         return capacidadRepository.findAllById(ids)
                 .map(capacidadEntityMapper::toCapacidad);
+    }
+
+    @Override
+    public Mono<Boolean> existenTodasLasCapacidades(List<Long> ids) {
+        return capacidadRepository.countByIdIn(ids)
+                .map(count -> count == ids.size());
+    }
+
+    @Override
+    public Mono<Void> guardarRelacionBootcampCapacidad(Long idBootcamp, List<Long> capacidades) {
+        return Flux.fromIterable(capacidades)
+                .map(capacidad -> new BootcampCapacidadEntity(idBootcamp, capacidad))
+                .flatMap(bootcampCapacidadRepository::save)
+                .then();
     }
 }
