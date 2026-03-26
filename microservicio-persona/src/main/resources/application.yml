@@ -1,0 +1,13 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: microservicio-persona
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/bd_personas
+    username: root
+    password: rootpassword
+  sql:
+    init:
+      mode: always
