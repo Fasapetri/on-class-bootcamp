@@ -1,4 +1,6 @@
 package com.onclass.capacidad.application.dto;
 
-public record RelacionBootcampCapacidadRequest() {
+import java.util.List;
+
+public record RelacionBootcampCapacidadRequest(Long idBootcamp, List<Long> capacidades) {
 }

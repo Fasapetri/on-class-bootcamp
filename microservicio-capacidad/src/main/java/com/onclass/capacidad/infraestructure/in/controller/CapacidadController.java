@@ -1,14 +1,18 @@
 package com.onclass.capacidad.infraestructure.in.controller;
 
 import com.onclass.capacidad.application.dto.CapacidadRequest;
+import com.onclass.capacidad.application.dto.RelacionBootcampCapacidadRequest;
 import com.onclass.capacidad.application.handler.CapacidadHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -36,5 +40,21 @@ public class CapacidadController {
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(paginaCustom));
 
+    }
+
+    public Mono<ServerResponse> validarCapacidades(ServerRequest request){
+        return request.bodyToMono(new ParameterizedTypeReference<List<Long>>() {})
+                .flatMap(capacidadHandler::existenTodasLasCapacidades)
+                .flatMap(existen -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(existen));
+    }
+
+    public Mono<ServerResponse> guardarRelacionBootcampCapacidad(ServerRequest request){
+        return request.bodyToMono(RelacionBootcampCapacidadRequest.class)
+                .flatMap(req -> capacidadHandler.guardarRelacionBootcampCapacidad(req.idBootcamp(), req.capacidades()))
+                .flatMap(capacidadResponse ->
+                        ServerResponse.status(HttpStatus.CREATED)
+                                .build());
     }
 }

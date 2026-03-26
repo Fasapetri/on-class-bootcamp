@@ -9,6 +9,8 @@ import com.onclass.capacidad.domain.model.PaginadoCustom;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Service
 public class CapacidadHandler implements ICapacidadHandler{
 
@@ -32,6 +34,16 @@ public class CapacidadHandler implements ICapacidadHandler{
     public Mono<PaginadoCustom<CapacidadDetalle>> listarCapacidades(int pagina, int tamanio, String ordenarPor, String direccion) {
         return capacidadServicePort.listarCapacidades(pagina, tamanio, ordenarPor, direccion);
 
+    }
+
+    @Override
+    public Mono<Boolean> existenTodasLasCapacidades(List<Long> ids) {
+        return capacidadServicePort.existenTodasLasCapacidades(ids);
+    }
+
+    @Override
+    public Mono<Void> guardarRelacionBootcampCapacidad(Long idBootcamp, List<Long> capacidades) {
+        return capacidadServicePort.guardarRelacionBootcampCapacidad(idBootcamp, capacidades);
     }
 
 

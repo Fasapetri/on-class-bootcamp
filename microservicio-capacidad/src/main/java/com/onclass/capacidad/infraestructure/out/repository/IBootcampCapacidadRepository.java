@@ -1,4 +1,7 @@
 package com.onclass.capacidad.infraestructure.out.repository;
 
-public interface IBootcampCapacidadRepository {
+import com.onclass.capacidad.infraestructure.out.entity.BootcampCapacidadEntity;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+
+public interface IBootcampCapacidadRepository extends ReactiveCrudRepository<BootcampCapacidadEntity, Long> {
 }

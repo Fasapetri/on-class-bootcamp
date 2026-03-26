@@ -12,4 +12,6 @@ public interface ICapacidadPersistencePort {
     Mono<Capacidad> guardarCapacidad(Capacidad capacidad);
     Mono<PaginadoCustom<Capacidad>> listarCapacidadesPaginadas(int pagina, int tamanio, String direccionAscDesc);
     Flux<Capacidad> obtenerCapacidadesPorIds(List<Long> ids);
+    Mono<Boolean> existenTodasLasCapacidades(List<Long> ids);
+    Mono<Void> guardarRelacionBootcampCapacidad(Long idBootcamp, List<Long> capacidades);
 }
