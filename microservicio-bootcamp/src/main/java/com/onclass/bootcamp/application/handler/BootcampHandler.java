@@ -4,10 +4,14 @@ import com.onclass.bootcamp.application.dto.BootcampRequest;
 import com.onclass.bootcamp.application.dto.BootcampResponse;
 import com.onclass.bootcamp.application.mapper.IBootcampMapper;
 import com.onclass.bootcamp.domain.api.IBootcampServicePort;
+import com.onclass.bootcamp.domain.model.Bootcamp;
 import com.onclass.bootcamp.domain.model.BootcampDetalle;
 import com.onclass.bootcamp.domain.model.PaginaCustom;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 public class BootcampHandler implements IBootcampHandler{
@@ -36,6 +40,11 @@ public class BootcampHandler implements IBootcampHandler{
     @Override
     public Mono<Void> eliminarBootcamp(Long idBootcamp) {
         return bootcampServicePort.eliminarBootcamp(idBootcamp);
+    }
+
+    @Override
+    public Flux<Bootcamp> buscarBootcampsPorIds(List<Long> idsBootcamps) {
+        return bootcampServicePort.buscarBootcampsPorIds(idsBootcamps);
     }
 
 }

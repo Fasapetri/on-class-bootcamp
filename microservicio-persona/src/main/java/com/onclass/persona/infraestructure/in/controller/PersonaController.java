@@ -1,5 +1,6 @@
 package com.onclass.persona.infraestructure.in.controller;
 
+import com.onclass.persona.application.dto.InscripcionRequest;
 import com.onclass.persona.application.dto.PersonaRequest;
 import com.onclass.persona.application.handler.PersonaHandler;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +23,11 @@ public class PersonaController {
                 .flatMap(personaGuardada -> ServerResponse.status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(personaGuardada));
+    }
+
+    public Mono<ServerResponse> inscribirPersonaBootcamp(ServerRequest serverRequest){
+        return serverRequest.bodyToMono(InscripcionRequest.class)
+                .flatMap(personaHandler::inscribirPersonaBootcamp)
+                .then(ServerResponse.status(HttpStatus.CREATED).build());
     }
 }

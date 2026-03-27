@@ -8,6 +8,7 @@ import com.onclass.bootcamp.domain.model.BootcampDetalle;
 import com.onclass.bootcamp.domain.model.PaginaCustom;
 import com.onclass.bootcamp.domain.spi.IBootcampPersistencePort;
 import com.onclass.bootcamp.domain.spi.ICapacidadExternalPort;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
@@ -65,6 +66,12 @@ public class BootcampUseCase implements IBootcampServicePort {
     public Mono<Void> eliminarBootcamp(Long idBootcamp) {
         return capacidadExternalPort.eliminarRelacionesYCapacidadesHuerfanas(idBootcamp)
                 .then(bootcampPersistencePort.eliminarBootcamp(idBootcamp));
+    }
+
+    @Override
+    public Flux<Bootcamp> buscarBootcampsPorIds(List<Long> idsBootcamps) {
+        if (idsBootcamps == null || idsBootcamps.isEmpty()) return Flux.empty();
+        return bootcampPersistencePort.obtenerBootcampsPorIds(idsBootcamps);
     }
 
     private Mono<Boolean> validarCapacidades(List<Long> capacidades){
