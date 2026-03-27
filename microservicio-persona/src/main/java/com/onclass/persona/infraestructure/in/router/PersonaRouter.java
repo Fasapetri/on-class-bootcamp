@@ -18,6 +18,11 @@ public class PersonaRouter {
                 RequestPredicates.POST("/api/v1/persona")
                         .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                 personaController::guardarPersona
-        );
+        )
+                .andRoute(
+                        RequestPredicates.POST("/api/v1/persona/inscripcion")
+                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                        personaController::inscribirPersonaBootcamp
+                );
     }
 }

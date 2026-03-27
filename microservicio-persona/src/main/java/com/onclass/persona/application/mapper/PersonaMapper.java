@@ -13,4 +13,5 @@ public interface PersonaMapper {
 
     PersonaResponse toPersonaResponse(Persona persona);
     Persona toPersona(PersonaRequest personaRequest);
+
 }

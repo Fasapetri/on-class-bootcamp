@@ -28,6 +28,11 @@ public class BootcampRouter {
                         RequestPredicates.DELETE("/api/v1/bootcamp/{id}")
                         .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         bootcampController::eliminarBootcamp
+                )
+                .andRoute(
+                        RequestPredicates.POST("/api/v1/bootcamp/obtenerFechasBootcamps")
+                        .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                        bootcampController::obtenerFechasBootcamps
                 );
     }
 }

@@ -13,7 +13,7 @@ public class GlobalExceptionController {
     @ExceptionHandler(PersonaException.class)
     public ResponseEntity<ErrorResponse> handlePersonaException(PersonaException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getCodigo(), ex.getMessage());
-        return ResponseEntity.badRequest().body(errorResponse);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
