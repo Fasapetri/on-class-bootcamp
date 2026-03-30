@@ -3,26 +3,31 @@ package com.onclass.bootcamp.domain.usecase;
 import com.onclass.bootcamp.domain.api.IBootcampServicePort;
 import com.onclass.bootcamp.domain.exception.BootcampErrorMessage;
 import com.onclass.bootcamp.domain.exception.BootcampException;
-import com.onclass.bootcamp.domain.model.Bootcamp;
-import com.onclass.bootcamp.domain.model.BootcampDetalle;
-import com.onclass.bootcamp.domain.model.PaginaCustom;
+import com.onclass.bootcamp.domain.model.*;
 import com.onclass.bootcamp.domain.spi.IBootcampPersistencePort;
 import com.onclass.bootcamp.domain.spi.ICapacidadExternalPort;
+import com.onclass.bootcamp.domain.spi.IReporteBootcampExternalPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class BootcampUseCase implements IBootcampServicePort {
 
+    private static final Logger log = LoggerFactory.getLogger(BootcampUseCase.class);
     private final IBootcampPersistencePort bootcampPersistencePort;
     private final ICapacidadExternalPort capacidadExternalPort;
+    private final IReporteBootcampExternalPort reporteBootcampExternalPort;
 
-    public BootcampUseCase(IBootcampPersistencePort bootcampPersistencePort, ICapacidadExternalPort capacidadExternalPort) {
+    public BootcampUseCase(IBootcampPersistencePort bootcampPersistencePort, ICapacidadExternalPort capacidadExternalPort, IReporteBootcampExternalPort reporteBootcampExternalPort) {
         this.bootcampPersistencePort = bootcampPersistencePort;
         this.capacidadExternalPort = capacidadExternalPort;
+        this.reporteBootcampExternalPort = reporteBootcampExternalPort;
     }
 
     @Override
@@ -43,7 +48,8 @@ public class BootcampUseCase implements IBootcampServicePort {
                 }).flatMap(bootcampGuardado ->
                         capacidadExternalPort.guardarRelacionBootcampCapacidad(bootcampGuardado.getId(), bootcampGuardado.getCapacidades())
                                                 .thenReturn(bootcampGuardado)
-        );
+        ).doOnSuccess(bootcampGuardado -> generarYEnviarReporteBootcamp(bootcampGuardado, bootcampGuardado.getCapacidades())
+                .subscribe());
 
     }
 
@@ -128,6 +134,46 @@ public class BootcampUseCase implements IBootcampServicePort {
 
                     PaginaCustom<Bootcamp> paginaReconstruida = new PaginaCustom<>(bootcampsOrdenados, idsBootcamps.getTotalPaginas(), idsBootcamps.getTotalElementos());
                     return enriquecerConCapacidades(paginaReconstruida);
+                });
+    }
+
+    private Mono<Void> generarYEnviarReporteBootcamp(Bootcamp bootcamp, List<Long> idsCapacidades){
+
+        return capacidadExternalPort.obtenerCapacidadesPorBootcamp(List.of(bootcamp.getId()))
+                .flatMap(mapaCapacidades -> {
+                    List<Capacidad> capacidades = mapaCapacidades.getOrDefault(bootcamp.getId(), List.of());
+
+                    int totalTecnologias = capacidades.stream().mapToInt(c -> c.getTecnologias().size()).sum();
+
+                    List<String> nombresCapacidades = capacidades.stream()
+                            .map(Capacidad::getNombre)
+                            .toList();
+
+                    List<String> nombresTecnologias = capacidades.stream()
+                            .flatMap(c -> c.getTecnologias().stream())
+                            .map(Tecnologia::getNombre)
+                            .distinct()
+                            .toList();
+
+                    ReporteBootcamp reporte = new ReporteBootcamp(
+                            null,
+                            bootcamp.getId(),
+                            bootcamp.getNombre(),
+                            bootcamp.getDescripcion(),
+                            bootcamp.getFechaLanzamiento(),
+                            bootcamp.getDuracion(),
+                            idsCapacidades.size(),
+                            totalTecnologias,
+                            0,
+                            nombresCapacidades,
+                            nombresTecnologias,
+                            new ArrayList<>()
+                    );
+                    return reporteBootcampExternalPort.enviarReporteNuevoBootcamp(reporte);
+                })
+                .onErrorResume(error -> {
+                    log.error("Error en el envio del reporte del bootcamp ID {}: {}", bootcamp.getId(), error.getMessage(), error);
+                    return Mono.empty();
                 });
     }
 }

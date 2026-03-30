@@ -8,6 +8,10 @@ import com.onclass.persona.domain.model.Inscripcion;
 import com.onclass.persona.domain.model.Persona;
 import com.onclass.persona.domain.spi.IBootcampExternalPort;
 import com.onclass.persona.domain.spi.IPersonaPersistencePort;
+import com.onclass.persona.domain.spi.IReporteBootcampExternalPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
@@ -16,12 +20,15 @@ import java.util.stream.Stream;
 
 public class PersonaUseCase implements IPersonaServicePort {
 
+    private static final Logger log = LoggerFactory.getLogger(PersonaUseCase.class);
     private final IPersonaPersistencePort personaPersistencePort;
     private final IBootcampExternalPort bootcampExternalPort;
+    private final IReporteBootcampExternalPort reporteBootcampExternalPort;
 
-    public PersonaUseCase(IPersonaPersistencePort personaPersistencePort, IBootcampExternalPort bootcampExternalPort) {
+    public PersonaUseCase(IPersonaPersistencePort personaPersistencePort, IBootcampExternalPort bootcampExternalPort, IReporteBootcampExternalPort reporteBootcampExternalPort) {
         this.personaPersistencePort = personaPersistencePort;
         this.bootcampExternalPort = bootcampExternalPort;
+        this.reporteBootcampExternalPort = reporteBootcampExternalPort;
     }
 
 
@@ -85,7 +92,23 @@ public class PersonaUseCase implements IPersonaServicePort {
             return Mono.error(new PersonaException(PersonaErrorMessage.CRUCE_DE_FECHAS));
         }
 
-        return personaPersistencePort.guardarInscripcion(idPersona, idsNuevos);
+        return personaPersistencePort.guardarInscripcion(idPersona, idsNuevos)
+                .doOnSuccess(inscripcionGuardada -> {
+                    personaPersistencePort.buscarPersona(idPersona)
+                            .flatMap(personaEncontrada -> {
+                                return Flux.fromIterable(idsNuevos)
+                                        .flatMap(idBootcamp -> reporteBootcampExternalPort.notificarInscripcionAReporteBootcamp(
+                                                idBootcamp,
+                                                personaEncontrada.getNombre(),
+                                                personaEncontrada.getCorreo()
+                                        ))
+                                        .then();
+                            })
+                            .subscribe(
+                                    null,
+                                    error -> log.error("Fallo al enviar analítica de inscripción: {}", error.getMessage())
+                            );
+                });
     }
 
     private boolean existeCruceDeFechas(List<BootcampFecha> nuevos, List<BootcampFecha> actuales) {
