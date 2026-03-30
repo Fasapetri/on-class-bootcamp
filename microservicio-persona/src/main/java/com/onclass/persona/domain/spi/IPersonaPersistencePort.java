@@ -12,4 +12,5 @@ public interface IPersonaPersistencePort {
     Mono<Void> guardarInscripcion(Long idPersona, List<Long> idsBootcamps);
     Flux<Long> buscarIdsBootcampsPorPersona(Long idPersona);
     Mono<Boolean> existePersona(Long idPersona);
+    Mono<Persona> buscarPersona(Long idPersona);
 }

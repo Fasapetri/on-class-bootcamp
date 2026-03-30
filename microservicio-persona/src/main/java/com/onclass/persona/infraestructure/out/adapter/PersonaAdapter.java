@@ -47,4 +47,10 @@ public class PersonaAdapter implements IPersonaPersistencePort {
     public Mono<Boolean> existePersona(Long idPersona) {
         return personaRepository.existsById(idPersona);
     }
+
+    @Override
+    public Mono<Persona> buscarPersona(Long idPersona) {
+        return personaRepository.findById(idPersona)
+                .map(personaEntityMapper::toPersona);
+    }
 }
